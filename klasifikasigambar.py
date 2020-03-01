@@ -69,12 +69,7 @@ for i in range(0,451):
     
     # untuk satu block
     for j in range (0,16):
-        jarak = 0;
-        for k in range (0,3):
-            jarak = jarak + math.pow(arrayUtamaDataset[i][j][k]-inputImageFileName[j][k],2)
-            
-        # nilai satu block
-        jarak = math.sqrt(jarak)
+        jarak = euclidianDistance(arrayUtamaDataset[i], inputImageFileName)
         block.append(jarak)
         
     
@@ -83,6 +78,16 @@ for i in range(0,451):
     namaLabel = arrayUtamaDataset[i][16]
     hasilKNN = hasilKNN.append({'jarak':avg,'label':namaLabel}, ignore_index=True)
     
+def euclidianDistance(dataset, inputImg):
+    jarak = 0 
+    
+    for k in range (0,3):
+        jarak = jarak + math.pow(dataset[j][k]-inputImg[j][k],2)
+            
+        # nilai satu block
+    jarak = math.sqrt(jarak)
+    
+    return jarak
 
 # sort by jarak
 hasilKNN = hasilKNN.sort_values(by='jarak')
