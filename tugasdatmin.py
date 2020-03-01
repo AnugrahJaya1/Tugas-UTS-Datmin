@@ -11,8 +11,6 @@ import math
 import numpy
 from sklearn.cluster import KMeans
 import os 
-from numpy import asarray
-from numpy import save
 # define data
 import _pickle as cPickle
 
