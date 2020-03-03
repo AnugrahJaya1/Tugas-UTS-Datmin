@@ -150,5 +150,6 @@ for filename in arrOfImage:
     # mengambil label dengan jumlah anggota terbanyak
     prediksi = countLabel.index[0]
     
-    # print hasil
+    akurasi = (countLabel.jarak[0]/k)*100
     print('Gambar '+filename+' termasuk : '+prediksi)
+    print("skor akurasi: {0:9.2f}%".format(akurasi))
