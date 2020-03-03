@@ -10,9 +10,37 @@ import math
 import numpy
 from sklearn.cluster import KMeans
 import pandas as pd
+import os
 # define data
 import _pickle as cPickle
 
+
+
+# method untuk menghitung euclidian distance
+def euclidianDistance(dataset, inputImg):
+    jarak = 0 
+    
+    for k in range (0,3):
+        jarak = jarak + math.pow(dataset[j][k]-inputImg[j][k],2)
+            
+        # nilai satu block
+    jarak = math.sqrt(jarak)
+    
+    return jarak
+
+
+# method untuk melakukan perhitungan cosine simalarity
+def cosineSimilarity(dataset, inputImg):
+    t = 0 
+    a = 0
+    b = 0 
+    
+    for k in range (0,3):
+        t = t + dataset[j][k]*inputImg[j][k]
+        a = a + math.pow(dataset[j][k],2)
+        b = b + math.pow(inputImg[j][k],2)
+        
+    return t/(math.sqrt(a)*math.sqrt(b))
 
 def convertImagetoArrayBlock16(fullFileName):
     clt = KMeans(n_clusters = 3)
@@ -58,85 +86,69 @@ def convertImagetoArrayBlock16(fullFileName):
 # read the dataset 
 arrayUtamaDataset = cPickle.load( open( "arrayOfImage.pkl", "rb" )) 
 
-# read Image and convert into 16block of LAB 
-inputImageFileName = convertImagetoArrayBlock16('inputImage.jpg')
+    
+imageClassFolderName = os.getcwd()+'\\'+'test img'
+    
+    
+print(imageClassFolderName)  
+arrOfImage = os.listdir(imageClassFolderName)
+for filename in arrOfImage:
+    print(filename)
+    
 
-# dataframe penampung
-hasilKNN = pd.DataFrame({'jarak':[], 'label':[]})
-
-# untuk pergambar
-for i in range(0,451):
-    block = [];
+    # read Image and convert into 16block of LAB 
+    inputImageFileName = convertImagetoArrayBlock16(imageClassFolderName+'\\'+filename)
     
-    # untuk satu block
-    for j in range (0,16):
-        #jika menggnakan euclidian distance
-        #jarak = euclidianDistance(arrayUtamaDataset[i], inputImageFileName)
-        
-        #jika menggunakan 1 / euclidian distance
-        jarak = 1/(euclidianDistance(arrayUtamaDataset[i], inputImageFileName)+1)
-        
-        #jika menggunakan cosine similarity
-        #jarak = cosineSimilarity(arrayUtamaDataset[i], inputImageFileName)
-        
-        # menambahkan hasil perhitungan jarak untuk tiap blok
-        block.append(jarak)
-        
+    # dataframe penampung
+    hasilKNN = pd.DataFrame({'jarak':[], 'label':[]})
     
-    # rata rata satu gambar
-    avg = numpy.mean(block)
-    # untuk mendapatkan nama label gambar
-    namaLabel = arrayUtamaDataset[i][16]
-    
-    # memasukkan hasil perhitungan kedalam dataframe 
-    hasilKNN = hasilKNN.append({'jarak':avg,'label':namaLabel}, ignore_index=True)
-  
-
-# method untuk menghitung euclidian distance
-def euclidianDistance(dataset, inputImg):
-    jarak = 0 
-    
-    for k in range (0,3):
-        jarak = jarak + math.pow(dataset[j][k]-inputImg[j][k],2)
+    # untuk pergambar
+    for i in range(0,451):
+        block = [];
+        
+        # untuk satu block
+        for j in range (0,16):
+            #jika menggnakan euclidian distance
+            #jarak = euclidianDistance(arrayUtamaDataset[i], inputImageFileName)
             
-        # nilai satu block
-    jarak = math.sqrt(jarak)
-    
-    return jarak
-
-
-# method untuk melakukan perhitungan cosine simalarity
-def cosineSimilarity(dataset, inputImg):
-    t = 0 
-    a = 0
-    b = 0 
-    
-    for k in range (0,3):
-        t = t + dataset[j][k]*inputImg[j][k]
-        a = a + math.pow(dataset[j][k],2)
-        b = b + math.pow(inputImg[j][k],2)
+            #jika menggunakan 1 / euclidian distance
+            jarak = 1/(euclidianDistance(arrayUtamaDataset[i], inputImageFileName)+1)
+            
+            #jika menggunakan cosine similarity
+            #jarak = cosineSimilarity(arrayUtamaDataset[i], inputImageFileName)
+            
+            # menambahkan hasil perhitungan jarak untuk tiap blok
+            block.append(jarak)
+            
         
-    return t/(math.sqrt(a)*math.sqrt(b))
-
-# sort by jarak
-
-# untuk euclidian distance (BUKAN UNTUK 1 / euclidian distance)
-#hasilKNN = hasilKNN.sort_values(by='jarak')
-
-# untuk cosine similarity dan 1 / euclidiance
-hasilKNN = hasilKNN.sort_values(by='jarak', ascending=False)
-
-# pembulatan kebawah, untuk mendapatkan 1/3 jumlah data
-k = math.floor(hasilKNN.shape[0]/3)
-
-# mengambil 1/3 dari data
-hasilKNN = hasilKNN.iloc[0:k]
-
-# menghitung jumlah label dari 1/3 data
-countLabel = hasilKNN.groupby('label').count().sort_values(by='jarak',ascending=False)
-
-# mengambil label dengan jumlah anggota terbanyak
-prediksi = countLabel.index[0]
-
-# print hasil
-print('Gambar inputImage.jpg termasuk : '+prediksi)
+        # rata rata satu gambar
+        avg = numpy.mean(block)
+        # untuk mendapatkan nama label gambar
+        namaLabel = arrayUtamaDataset[i][16]
+        
+        # memasukkan hasil perhitungan kedalam dataframe 
+        hasilKNN = hasilKNN.append({'jarak':avg,'label':namaLabel}, ignore_index=True)
+      
+    
+    # sort by jarak
+    
+    # untuk euclidian distance (BUKAN UNTUK 1 / euclidian distance)
+    #hasilKNN = hasilKNN.sort_values(by='jarak')
+    
+    # untuk cosine similarity dan 1 / euclidiance
+    hasilKNN = hasilKNN.sort_values(by='jarak', ascending=False)
+    
+    # pembulatan kebawah, untuk mendapatkan 1/3 jumlah data
+    k = math.floor(hasilKNN.shape[0]/3)
+    
+    # mengambil 1/3 dari data
+    hasilKNN = hasilKNN.iloc[0:k]
+    
+    # menghitung jumlah label dari 1/3 data
+    countLabel = hasilKNN.groupby('label').count().sort_values(by='jarak',ascending=False)
+    
+    # mengambil label dengan jumlah anggota terbanyak
+    prediksi = countLabel.index[0]
+    
+    # print hasil
+    print('Gambar '+filename+' termasuk : '+prediksi)
