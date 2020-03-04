@@ -24,7 +24,7 @@ def euclidianDistance(dataset, inputImg):
         jarak = 0 
         
         for k in range (0,3):
-            jarak = jarak + math.pow(dataset[j][k]-inputImg[j][k],2)
+            jarak = jarak + math.pow(dataset[j][k]-inputImg[x][k],2)
                 
             # nilai satu block
         jarak = math.sqrt(jarak)
@@ -124,13 +124,14 @@ for filename in arrOfImage:
             
             #jika menggunakan cosine similarity
             #jarak = cosineSimilarity(arrayUtamaDataset[i], inputImageFileName)
-            jarak = numpy.mean(jarak)
+            jarak = numpy.sum(jarak)
             
             # menambahkan hasil perhitungan jarak untuk tiap blok
+            
             #jika menggunakan 1 / euclidian distance
-            block.append(1/jarak)
+            #block.append(1/jarak)
             #cosine 
-            #block.append(jarak)
+            block.append(jarak)
             
         
         # rata rata satu gambar
@@ -146,10 +147,10 @@ for filename in arrOfImage:
     # sort by jarak
     
     # untuk euclidian distance (BUKAN UNTUK 1 / euclidian distance)
-    #hasilKNN = hasilKNN.sort_values(by='jarak')
+    hasilKNN = hasilKNN.sort_values(by='score')
     
     # untuk cosine similarity dan 1 / euclidiance
-    hasilKNN = hasilKNN.sort_values(by='score', ascending=False)
+    #hasilKNN = hasilKNN.sort_values(by='score', ascending=False)
     
     # pembulatan kebawah, untuk mendapatkan 1/3 jumlah data
     k = math.floor(hasilKNN.shape[0]/3)
